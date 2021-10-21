@@ -8,7 +8,7 @@ import time
 from .manifest import (
     compute_md5sums,
     create_metadata,
-    write_metadata,
+    write_manifest,
 )
 
 
@@ -115,7 +115,7 @@ def archive_star_solo(
     md5s = compute_md5sums(archive_files)
     manifest = create_metadata(config, md5s)
     manifest_buffer = BytesIO(
-        write_metadata(StringIO(), manifest).getvalue().encode("utf-8")
+        write_manifest(StringIO(), manifest).getvalue().encode("utf-8")
     )
 
     tar_name = "{}_{}_{}.tar.gz".format(quantification, multiread, matrix)

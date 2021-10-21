@@ -46,9 +46,21 @@ def create_metadata(config, md5s):
     return metadata
 
 
-def write_metadata(outstream, config):
+def write_manifest(outstream, config):
     writer = csv.writer(outstream, delimiter="\t")
     writer.writerow(["name", "value"])
     for key in config:
         writer.writerow([key, config[key]])
     return outstream
+
+
+def read_manifest(instream):
+    reader = csv.reader(instream, delimiter="\t")
+    header = None
+    metadata = {}
+    for row in reader:
+        if header is None:
+            header = row
+        else:
+            metadata[row[0]] = row[1]
+    return metadata
