@@ -19,6 +19,24 @@ from mex_gene_archive.starsolo import (
 from .stage_data import srx5908538
 
 
+def make_unique_filtered_archive(solo_dir, output_dir):
+    config = {
+        "experiment_accession": "SRP199641",
+        "description": "scRNA-seq of HCC1395: LLU 10X Sequence1",
+        "library_accession": "SRX5908538",
+        "analysis_version": "version",
+    }
+    tar_name = archive_star_solo(
+        solo_dir,
+        config,
+        "GeneFull_Ex50pAS",
+        "Unique",
+        "filtered",
+        destination=output_dir,
+    )
+    return tar_name
+
+
 class TestStarSolo(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -26,6 +44,7 @@ class TestStarSolo(TestCase):
         cls.temp_dir = cls.context.enter_context(srx5908538())
         cls.analysis_dir = cls.temp_dir / "SRX5908538"
         cls.solo_dir = cls.analysis_dir / "Solo.out"
+        cls.tar_name = make_unique_filtered_archive(cls.solo_dir, cls.analysis_dir)
 
     @classmethod
     def tearDownClass(cls):
@@ -113,20 +132,6 @@ class TestStarSolo(TestCase):
             self.assertEqual(expected, term)
 
     def test_archive(self):
-        config = {
-            "experiment_accession": "SRP199641",
-            "description": "scRNA-seq of HCC1395: LLU 10X Sequence1",
-            "library_accession": "SRX5908538",
-            "analysis_version": "version",
-        }
-        archive_star_solo(
-            self.solo_dir,
-            config,
-            "GeneFull_Ex50pAS",
-            "Unique",
-            "filtered",
-            destination=self.analysis_dir,
-        )
         expected = "GeneFull_Ex50pAS_Unique_filtered.tar.gz"
         self.assertTrue((self.analysis_dir / expected).is_file())
 
