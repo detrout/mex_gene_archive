@@ -9,6 +9,11 @@ from mex_gene_archive.filter import (
 from mex_gene_archive.manifest import (
     compute_md5sums,
 )
+from mex_gene_archive.reader import (
+    read_mex_archive,
+    read_barcodes,
+    read_features,
+)
 from mex_gene_archive.starsolo import (
     MULTIREAD_NAME,
     make_list_of_archive_files,
@@ -134,6 +139,31 @@ class TestStarSolo(TestCase):
     def test_archive(self):
         expected = "GeneFull_Ex50pAS_Unique_filtered.tar.gz"
         self.assertTrue((self.analysis_dir / expected).is_file())
+        filtered_dir = self.solo_dir / "GeneFull_Ex50pAS" / "filtered"
+
+        data = read_mex_archive(self.tar_name)
+
+        with open(filtered_dir / "matrix.mtx") as instream:
+            for line in instream:
+                if line.startswith("%"):
+                    continue
+                rows, columns, count = [int(x) for x in line.rstrip().split()]
+                break
+
+        self.assertEqual(data["matrix"].shape[0], rows)
+        self.assertEqual(data["matrix"].shape[1], columns)
+
+        with open(filtered_dir / "barcodes.tsv", "rt") as instream:
+            barcodes = list(read_barcodes(instream))
+            self.assertEqual(barcodes, data["barcodes"].to_list())
+
+        with open(filtered_dir / "features.tsv", "rt") as instream:
+            features = list(read_features(instream))
+            gene_id = [x[0] for x in features]
+            gene_symbols = [x[1] for x in features]
+            self.assertEqual((len(features), 2), data["features"].shape)
+            self.assertEqual(gene_id, data["features"]["gene_id"].to_list())
+            self.assertEqual(gene_symbols, data["features"]["gene_symbols"].to_list())
 
     def test_filter(self):
         BARCODE_TSV_INDEX = 0
