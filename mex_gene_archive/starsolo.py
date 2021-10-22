@@ -134,3 +134,5 @@ def archive_star_solo(
             update_tarinfo(info, filename)
             with open(filename, "rb") as instream:
                 archive.addfile(info, instream)
+
+    return tar_name
