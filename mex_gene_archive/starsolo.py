@@ -96,6 +96,23 @@ def make_output_type_term(quantification="GeneFull", multiread="Unique", matrix=
     return output_type
 
 
+def parse_star_log_out(filename):
+    with open(filename, "rt") as instream:
+        return parse_star_log_out_stream(instream)
+
+
+def parse_star_log_out_stream(fileobj):
+    star_version_prefix = "STAR version="
+    attributes = {}
+    for line in fileobj:
+        if line.startswith(star_version_prefix):
+            attributes["software_version"] = line.rstrip()[len(star_version_prefix):]
+        elif line.startswith("##### Command Line:"):
+            attributes["arguments"] = next(fileobj)
+
+    return attributes
+
+
 def archive_star_solo(
     solo_root,
     config,
@@ -112,6 +129,7 @@ def archive_star_solo(
     )
 
     config['output_type'] = make_output_type_term(quantification, multiread, matrix)
+    config.update(parse_star_log_out(solo_root / ".." / "Log.out"))
     md5s = compute_md5sums(archive_files)
     manifest = create_metadata(config, md5s)
     manifest_buffer = BytesIO(

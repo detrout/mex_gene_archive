@@ -1,5 +1,6 @@
 import contextlib
 import hashlib
+from io import StringIO
 import numpy
 from pathlib import Path
 from pytest import importorskip
@@ -22,6 +23,7 @@ from mex_gene_archive.starsolo import (
     make_list_of_archive_files,
     make_output_type_term,
     validate_star_solo_out_arguments,
+    parse_star_log_out_stream,
     archive_star_solo,
 )
 from .stage_data import srx5908538
@@ -138,6 +140,27 @@ class TestStarSolo(TestCase):
             expected = expected_splice[(quantification, multiread, matrix)]
             term = make_output_type_term(quantification, multiread, matrix)
             self.assertEqual(expected, term)
+
+
+    def test_parse_star_log_stream(self):
+        software_version = "dev_EoI_2.7.9a_2021-09-30"
+        arguments = """STAR --genomeDir genome --readFilesIn SRX5908538_R2.fastq.gz SRX5908538_R1.fastq.gz --readFilesCommand zcat --runThreadN 16 --genomeLoad NoSharedMemory --outFilterMultimapNmax 20 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --outSAMheaderCommentFile COfile.txt --outSAMheaderHD @HD VN:1.4 SO:coordinate --outSAMunmapped Within --outFilterType BySJout --outSAMattributes NH HI AS NM MD CB CR CY UB UR UY gx gn --outSAMstrandField intronMotif --outSAMtype BAM SortedByCoordinate --sjdbScore 1 --clipAdapterType CellRanger4 --outFilterScoreMin 30 --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts --soloUMIdedup 1MM_CR --soloUMIfiltering MultiGeneUMI_CR --soloType CB_UMI_Simple --soloCellFilter EmptyDrops_CR --soloUMIlen 10 --soloCBlen 16 --soloBarcodeReadLength 0 --soloCBwhitelist 10xv2_allowlist.txt --soloStrand Forward --soloFeatures GeneFull_Ex50pAS SJ --soloMultiMappers Unique EM --limitBAMsortRAM 51539607552 --outTmpDir _STARtmp --outFileNamePrefix ./
+"""
+
+        head = StringIO("""STAR version={version}
+STAR compilation time,server,dir=2021-09-30T17:07:55-07:00 :/tmp/tmp.01I63TZvRF/STAR/source
+STAR git: On branch dev_ExonOverIntron ; commit 12beb0c52367d568fc993c1990795676e7f9d9cb ; diff files: 
+##### Command Line:
+{arguments}
+##### Initial USER parameters from Command Line:
+outFileNamePrefix                 ./
+outTmpDir                         _STARtmp
+###### All USER parameters from Command Line:
+""".format(version=software_version, arguments=arguments))
+        attributes = parse_star_log_out_stream(head)
+        self.assertEqual(attributes["software_version"], software_version)
+        self.assertEqual(attributes["arguments"], arguments)
+
 
     def test_archive(self):
         expected = "GeneFull_Ex50pAS_Unique_filtered.tar.gz"
