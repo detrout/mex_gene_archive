@@ -2,6 +2,7 @@ import contextlib
 import hashlib
 import numpy
 from pathlib import Path
+from pytest import importorskip
 from unittest import TestCase
 
 from mex_gene_archive.filter import (
@@ -14,6 +15,7 @@ from mex_gene_archive.reader import (
     read_mex_archive,
     read_barcodes,
     read_features,
+    main as reader_main,
 )
 from mex_gene_archive.starsolo import (
     MULTIREAD_NAME,
@@ -165,6 +167,38 @@ class TestStarSolo(TestCase):
             self.assertEqual((len(features), 2), data["features"].shape)
             self.assertEqual(gene_id, data["features"]["gene_id"].to_list())
             self.assertTrue(numpy.all(gene_symbols == data["features"]["gene_symbols"]))
+
+    def test_archive_to_h5ad(self):
+        anndata = importorskip("anndata")
+        target_file = self.temp_dir / "SRX5908538_GeneFull_Unique_filtered.h5ad"
+        reader_main(["-o", str(target_file), str(self.tar_name)])
+
+        self.assertTrue(target_file.is_file)
+
+        adata = anndata.read_h5ad(target_file)
+
+        filtered_dir = self.solo_dir / "GeneFull_Ex50pAS" / "filtered"
+        with open(filtered_dir / "matrix.mtx") as instream:
+            for line in instream:
+                if line.startswith("%"):
+                    continue
+                rows, columns, count = [int(x) for x in line.rstrip().split()]
+                break
+
+        # AnnData matrix is transposed from what STAR writes
+        self.assertEqual(adata.shape[0], columns)
+        self.assertEqual(adata.shape[1], rows)
+
+        with open(filtered_dir / "barcodes.tsv", "rt") as instream:
+            barcodes = list(read_barcodes(instream))
+            self.assertEqual(barcodes, adata.obs_names.to_list())
+
+        with open(filtered_dir / "features.tsv", "rt") as instream:
+            features = list(read_features(instream))
+            gene_id = [x[0] for x in features]
+            gene_symbols = [x[1] for x in features]
+            self.assertEqual(gene_id, adata.var_names.to_list())
+            self.assertTrue(numpy.all(gene_symbols == adata.var["gene_symbols"]))
 
     def test_filter(self):
         BARCODE_TSV_INDEX = 0
