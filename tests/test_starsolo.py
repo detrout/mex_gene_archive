@@ -1,5 +1,6 @@
 import contextlib
 import hashlib
+import numpy
 from pathlib import Path
 from unittest import TestCase
 
@@ -163,7 +164,7 @@ class TestStarSolo(TestCase):
             gene_symbols = [x[1] for x in features]
             self.assertEqual((len(features), 2), data["features"].shape)
             self.assertEqual(gene_id, data["features"]["gene_id"].to_list())
-            self.assertEqual(gene_symbols, data["features"]["gene_symbols"].to_list())
+            self.assertTrue(numpy.all(gene_symbols == data["features"]["gene_symbols"]))
 
     def test_filter(self):
         BARCODE_TSV_INDEX = 0

@@ -72,7 +72,7 @@ def read_mex_archive_as_anndata(filename=None, fileobj=None):
     adata = AnnData(X=result["matrix"].T.tocsc(), uns=result["metadata"])
     adata.obs_names = result["barcodes"]
     adata.var_names = result["features"]["gene_id"]
-    adata.var["gene_symbol"] = result["features"]["gene_symbol"]
+    adata.var["gene_symbols"] = result["features"]["gene_symbols"].to_numpy()
     return adata
 
 
