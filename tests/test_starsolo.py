@@ -38,7 +38,6 @@ def make_unique_filtered_archive(solo_dir, output_dir):
         "experiment_accession": "SRP199641",
         "description": "scRNA-seq of HCC1395: LLU 10X Sequence1",
         "library_accession": "SRX5908538",
-        "analysis_version": "version",
     }
     tar_name = archive_star_solo(
         solo_dir,
