@@ -5,3 +5,4 @@ __pycache__/
 .tox/
 *.egg-info/
 docs/_build/
+mex_gene_archive/_version.py

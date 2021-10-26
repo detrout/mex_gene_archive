@@ -1,10 +1,13 @@
 [build-system]
 requires = [
-    "setuptools",
-    "setuptools_scm",
+    "setuptools>=45",
+    "setuptools_scm>=6.2",
     "wheel",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "mex_gene_archive/_version.py"
 
 [tool.tox]
 legacy_tox_ini = """
