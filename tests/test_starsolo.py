@@ -166,7 +166,6 @@ outTmpDir                         _STARtmp
         self.assertEqual(attributes["software_version"], software_version)
         self.assertEqual(attributes["arguments"], arguments)
 
-
     def test_archive(self):
         expected = "GeneFull_Ex50pAS_Unique_filtered.tar.gz"
         self.assertTrue((self.analysis_dir / expected).is_file())
