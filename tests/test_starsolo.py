@@ -26,7 +26,11 @@ from mex_gene_archive.starsolo import (
     parse_star_log_out_stream,
     archive_star_solo,
 )
-from .stage_data import srx5908538
+from .stage_data import (
+    generate_count_matrix,
+    make_sample_data,
+    scratch_dir
+)
 
 
 def make_unique_filtered_archive(solo_dir, output_dir):
@@ -51,8 +55,9 @@ class TestStarSolo(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.context = contextlib.ExitStack()
-        cls.temp_dir = cls.context.enter_context(srx5908538())
-        cls.analysis_dir = cls.temp_dir / "SRX5908538"
+        cls.temp_dir = cls.context.enter_context(scratch_dir())
+        print(cls.temp_dir)
+        cls.analysis_dir = make_sample_data(cls.temp_dir)
         cls.solo_dir = cls.analysis_dir / "Solo.out"
         cls.tar_name = make_unique_filtered_archive(cls.solo_dir, cls.analysis_dir)
 
@@ -193,7 +198,7 @@ outTmpDir                         _STARtmp
 
     def test_archive_to_h5ad(self):
         anndata = importorskip("anndata")
-        target_file = self.temp_dir / "SRX5908538_GeneFull_Unique_filtered.h5ad"
+        target_file = self.temp_dir / "synthdata_GeneFull_Unique_filtered.h5ad"
         reader_main(["-o", str(target_file), str(self.tar_name)])
 
         self.assertTrue(target_file.is_file)
@@ -222,6 +227,14 @@ outTmpDir                         _STARtmp
             gene_symbols = [x[1] for x in features]
             self.assertEqual(gene_id, adata.var_names.to_list())
             self.assertTrue(numpy.all(gene_symbols == adata.var["gene_symbols"]))
+
+    def test_generate_count_matrix(self):
+        # Do we get the same count matrix for the same barcodes?
+        count0 = generate_count_matrix(['AAAA', 'GGGG', 'TTTT'], 100)
+        count1 = generate_count_matrix(['AAAA', 'TTTT'], 100)
+
+        self.assertTrue(numpy.all(count0[:, 0] == count1[:, 0]))
+        self.assertTrue(numpy.all(count0[:, 2] == count1[:, 1]))
 
     def test_filter(self):
         BARCODE_TSV_INDEX = 0
