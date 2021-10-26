@@ -16,5 +16,6 @@ skip_missing_interpreters = True
 commands = pytest
 deps = 
   pytest >= 4, <5
-
+extras =
+  test
 """

@@ -1,3 +1,5 @@
+|ci-test|
+
 Introduction
 ============
 
@@ -69,3 +71,4 @@ arguments.
    archive_star_solo("experiment", config)
 
 .. _`matrix market exchange`: https://math.nist.gov/MatrixMarket/
+.. |ci-test| image:: https://github.com/detrout/mex_gene_archive/actions/workflows/ci-test/badge.svg`_
