@@ -42,6 +42,24 @@ def remove_manifest_md5s(manifest):
 
 
 def read_mex_archive(filename=None, fileobj=None):
+    """Reads a mex archive into a dictionary
+
+    Parameters
+    ----------
+    filename : Name of file to read
+    fileobj : file-like object to read
+
+    one and only one of filename or fileobj needs to be provided.
+
+    Returns
+    -------
+    A dictionary with the manifest, (cell) barcodes, (gene) features,
+    and the sparse matrix in features in rows and and barcodes in columns
+    format.
+
+    note that the preferred AnnData format is transposed from the default
+    mapper format.
+    """
     result = {}
 
     with tarfile.open(name=filename, mode="r:*", fileobj=fileobj) as archive:
@@ -65,6 +83,20 @@ def read_mex_archive(filename=None, fileobj=None):
 
 
 def read_mex_archive_as_anndata(filename=None, fileobj=None):
+    """Reads a mex archive into an AnnData structure
+
+    Parameters
+    ----------
+    filename : Name of file to read
+    fileobj : file-like object to read
+
+    one and only one of filename or fileobj needs to be provided.
+
+    Returns
+    -------
+
+    AnnData object
+    """
     from anndata import AnnData
 
     result = read_mex_archive(filename=filename, fileobj=fileobj)

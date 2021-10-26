@@ -24,6 +24,8 @@ MULTIREAD_NAME = {
 def validate_star_solo_out_arguments(
     quantification="GeneFull", multiread="Unique", matrix="raw"
 ):
+    """Make sure the arguments match the STAR Solo command line arguments
+    """
     quantification_terms = ["Gene", "GeneFull", "GeneFull_Ex50pAS", "SJ"]
     if quantification not in quantification_terms:
         raise ValueError("{} not in {}".format(quantification, quantification_terms))
@@ -46,6 +48,8 @@ def validate_star_solo_out_arguments(
 def make_list_of_archive_files(
     solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"
 ):
+    """Generate list of files we expect to find in a STAR Solo.out directory tree
+    """
     validate_star_solo_out_arguments(quantification, multiread, matrix)
     archive_files = []
 
@@ -59,6 +63,8 @@ def make_list_of_archive_files(
 
 
 def update_tarinfo(info, filename):
+    """Fill in tarinfo fields for making tar archive
+    """
     stat_info = os.stat(filename)
     info.size = stat_info[stat.ST_SIZE]
     info.mode = stat_info[stat.ST_MODE]
@@ -69,6 +75,11 @@ def update_tarinfo(info, filename):
 
 
 def make_output_type_term(quantification="GeneFull", multiread="Unique", matrix="raw"):
+    """Generate ENCODE controlled vocabulary term for the specified result type
+
+    The different combinations of quantification, multiread, and matrix are represented
+    as different object types and the ENCODE portal.
+    """
     validate_star_solo_out_arguments(quantification, multiread, matrix)
 
     gene_term = {
@@ -97,11 +108,15 @@ def make_output_type_term(quantification="GeneFull", multiread="Unique", matrix=
 
 
 def parse_star_log_out(filename):
+    """Wrapper for parse_star_log_out_stream to do file IO
+    """
     with open(filename, "rt") as instream:
         return parse_star_log_out_stream(instream)
 
 
 def parse_star_log_out_stream(fileobj):
+    """Read a stream holding STAR Log.out and return version and arguments
+    """
     star_version_prefix = "STAR version="
     attributes = {}
     for line in fileobj:
@@ -122,6 +137,22 @@ def archive_star_solo(
     *,
     destination=None,
 ):
+    """Archive a specific STAR solo result directory
+
+
+    Parameters
+    ----------
+    solo_root : path to STAR's Solo.out directory where
+        a file named {quantification}_{multiread}_{matrix}.tar.gz will be
+        written.
+    config : dictionary of configuration options
+    quantification : Which counting method to use "Gene", "GeneFull",
+        "GeneFull_Ex50pAS"
+    multiread : which STAR EM processing level to use "Unique", "EM"
+    matrix : which matrix to read either "raw" or "filtered"
+    destination : what directory to write the archive to, defaults to
+        solo_root/..
+    """
     validate_star_solo_out_arguments(quantification, multiread, matrix)
 
     archive_files = make_list_of_archive_files(

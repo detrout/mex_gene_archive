@@ -4,7 +4,10 @@ import csv
 
 
 def read_barcode_lineno_map(stream):
-    """Build a map of barcodes to line number from a stream"""
+    """Build a map of barcodes to line number from a stream
+
+    This builds a one based dictionary of barcode to line numbers.
+    """
     barcodes = {}
     reader = csv.reader(stream, delimiter="\t")
     for i, line in enumerate(reader):
@@ -30,6 +33,23 @@ def filter_mtx(raw_barcode_filename, raw_matrix_filename, filtered_barcode_filen
     and then yield the rows from the raw matrix file to only include
     the barcodes in the filtered barcode list and rewrite the index values
     to match the filtered barcode list.
+
+    Parameters
+    ----------
+    raw_barcode_filename : string
+        filename of file containing a list of cell barcode labels for the
+        raw matrix.
+    raw_matrix_filename : string
+        filename of file a matrix market file
+    filtered_barcode_filename : string
+        file name containing a subset of the cell barcodes contained in the
+        raw_barcode_filename with which the raw_matrix will be
+        resized to only contain those indices.
+
+    Yields
+    ------
+    Rows of a new matrix market formatted file with the column indexes
+    rewritten to match the filtered matrix.
     """
     with open(raw_barcode_filename, "rt") as instream:
         raw_barcodes = read_barcode_lineno_map(instream)
@@ -76,6 +96,27 @@ def write_filtered_mtx(
     filtered_barcode_filename,
     filtered_matrix_filename,
 ):
+    """wrapper for filter_mtx that will save the filtered matrix
+
+    We read the the raw barcodes, raw matrix, and filtered barcodes
+    and then yield the rows from the raw matrix file to only include
+    the barcodes in the filtered barcode list and rewrite the index values
+    to match the filtered barcode list.
+
+    Parameters
+    ----------
+    raw_barcode_filename : string
+        filename of file containing a list of cell barcode labels for the
+        raw matrix.
+    raw_matrix_filename : string
+        filename of file a matrix market file
+    filtered_barcode_filename : string
+        file name containing a subset of the cell barcodes contained in the
+        raw_barcode_filename with which the raw_matrix will be
+        resized to only contain those indices.
+    filtered_matrix_filename : string
+        filename to write the filtered matrix to
+    """
     with open(filtered_matrix_filename, "wt") as outstream:
         for line in filter_mtx(
             raw_barcode_filename, raw_matrix_filename, filtered_barcode_filename

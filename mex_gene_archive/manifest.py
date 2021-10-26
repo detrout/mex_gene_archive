@@ -15,6 +15,17 @@ class ConfigError(ValueError):
 
 
 def compute_md5sums(filenames):
+    """Compute md5sums of a list of files
+
+    Parameters
+    ----------
+    filenames : list(string)
+       List of filenames that we should compute the md5sum of
+
+    Returns
+    -------
+    List of tuples containing the filename and md5 hex digest
+    """
     results = []
     for f in filenames:
         with open(f, "rb") as instream:
@@ -25,6 +36,15 @@ def compute_md5sums(filenames):
 
 def compute_stream_md5sum(instream):
     """Compute the md5sum of a file-like object
+
+    Parameters
+    ----------
+    instream : file-like object
+
+    Returns
+    -------
+
+    md5 digest object
     """
     md5 = hashlib.md5()
     readable = instream.readable()
@@ -38,6 +58,17 @@ def compute_stream_md5sum(instream):
 
 
 def create_metadata(config, md5s):
+    """Compute metadata for a manifest file
+
+    Parameters
+    ----------
+    config : dict
+        Dictionary of metadata attributes that include experiment_accession,
+        description, and library_accession.
+    md5s : list((filename, md5 hexdigest))
+        List of filename and hexdigest tuples that will be added to the manifest
+        dictionary.
+    """
     metadata = {
         "type": "MexGeneArchive_v1",
         "output_type": config['output_type'],
@@ -53,7 +84,21 @@ def create_metadata(config, md5s):
 
     return metadata
 
+
 def validate_config_metadata(config):
+    """Validate config dictionary
+
+    Parameters
+    ----------
+    config : dict
+        Dictionary of metadata attributes that include experiment_accession,
+        description, and library_accession.
+        It must also not include type, output_type, software_version, or arguments
+
+    Raises
+    ------
+    ConfigError if something is wrong
+    """
     not_user = ["type", "output_type", "software_version", "arguments"]
     user = ["experiment_accession", "description", "library_accession"]
     has_errors = False
@@ -73,6 +118,15 @@ def validate_config_metadata(config):
 
 
 def write_manifest(outstream, config):
+    """Write manifest information to file-like object
+
+    Parameters
+    ----------
+    outstream : writable file like object
+        destination for the tab delimited contents
+    config : dict
+        Contains dictionary of manifest metadata values.
+    """
     writer = csv.writer(outstream, delimiter="\t")
     writer.writerow(["name", "value"])
     for key in config:
@@ -81,6 +135,12 @@ def write_manifest(outstream, config):
 
 
 def read_manifest(instream):
+    """Read manifest file into a dictionary
+
+    Parameters
+    ----------
+    instream : readable file like object
+    """
     reader = csv.reader(instream, delimiter="\t")
     header = None
     metadata = {}
