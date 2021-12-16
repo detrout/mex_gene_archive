@@ -2,6 +2,7 @@
 # Stage test data
 from contextlib import contextmanager
 import numpy
+from numpy import random
 from pathlib import Path
 import itertools
 from tempfile import TemporaryDirectory
@@ -713,8 +714,8 @@ def generate_count_matrix(barcodes, feature_length):
     counts = []
     for barcode in barcodes:
         seed = [ord(x) for x in barcode]
-        rng = numpy.random.default_rng(seed=seed)
-        row = numpy.floor(rng.gamma(0.5, 10, size=feature_length))
+        random.seed(seed)
+        row = numpy.floor(random.gamma(0.5, 10, size=feature_length))
         counts.append(row)
     counts = numpy.asarray(counts).T
     return counts
