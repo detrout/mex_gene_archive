@@ -175,7 +175,7 @@ def archive_star_solo(
     elif solo_root.is_dir():
         tar_name = solo_root.parent / tar_name
 
-    with tarfile.open(tar_name, "w:gz") as archive:
+    with tarfile.open(tar_name, "w:gz", format=tarfile.PAX_FORMAT) as archive:
         info = tarfile.TarInfo("manifest.tsv")
         update_tarinfo(info, archive_files[0])
         info.size = len(manifest_buffer.getvalue())
