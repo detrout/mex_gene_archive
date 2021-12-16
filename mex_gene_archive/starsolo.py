@@ -68,9 +68,11 @@ def update_tarinfo(info, filename):
     stat_info = os.stat(filename)
     info.size = stat_info[stat.ST_SIZE]
     info.mode = stat_info[stat.ST_MODE]
-    info.mtime = time.time()
-    info.uid = stat_info[stat.ST_UID]
-    info.gid = stat_info[stat.ST_GID]
+    info.mtime = 0
+    info.uid = 0
+    info.gid = 0
+    info.uname = "root"
+    info.gname = "root"
     info.type = tarfile.REGTYPE
 
 
