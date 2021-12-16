@@ -76,7 +76,7 @@ def read_mex_archive(filename=None, fileobj=None):
                     columns=["gene_id", "gene_symbols"],
                 )
             elif member_path.suffix == ".mtx":
-                result["matrix"] = mmread(text_stream)
+                result["matrix"] = mmread(archive.extractfile(member))
             else:
                 logger.warning("Unrecognized archive member {}".format(member.name))
     return result
