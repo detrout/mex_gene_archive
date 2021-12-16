@@ -1,3 +1,4 @@
+import gzip
 from io import BytesIO, StringIO
 import os
 from pathlib import Path
@@ -176,15 +177,16 @@ def archive_star_solo(
     elif solo_root.is_dir():
         tar_name = solo_root.parent / tar_name
 
-    with tarfile.open(tar_name, "w:gz", format=tarfile.PAX_FORMAT) as archive:
-        info = tarfile.TarInfo("manifest.tsv")
-        update_tarinfo(info, archive_files[0])
-        info.size = len(manifest_buffer.getvalue())
-        archive.addfile(info, manifest_buffer)
-        for filename in archive_files:
-            info = tarfile.TarInfo(str(filename.relative_to(solo_root)))
-            update_tarinfo(info, filename)
-            with open(filename, "rb") as instream:
-                archive.addfile(info, instream)
+    with gzip.GzipFile(tar_name, "wb", mtime=0) as gzipstream:
+        with tarfile.open(mode="w", fileobj=gzipstream, format=tarfile.PAX_FORMAT) as archive:
+            info = tarfile.TarInfo("manifest.tsv")
+            update_tarinfo(info, archive_files[0])
+            info.size = len(manifest_buffer.getvalue())
+            archive.addfile(info, manifest_buffer)
+            for filename in archive_files:
+                info = tarfile.TarInfo(str(filename.relative_to(solo_root)))
+                update_tarinfo(info, filename)
+                with open(filename, "rb") as instream:
+                    archive.addfile(info, instream)
 
     return tar_name
