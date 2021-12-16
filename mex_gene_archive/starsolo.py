@@ -69,6 +69,7 @@ def update_tarinfo(info, filename):
     info.size = stat_info[stat.ST_SIZE]
     info.mode = stat_info[stat.ST_MODE]
     info.mtime = 0
+    info.mode = 0o644
     info.uid = 0
     info.gid = 0
     info.uname = "root"
