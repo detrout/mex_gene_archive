@@ -18,11 +18,39 @@ def read_barcodes(instream):
         yield line.rstrip()
 
 
-def read_features(instream):
-    reader = csv.reader(instream, delimiter="\t")
-    for row in reader:
-        # Third column is frequently boring, why do we even save it?
-        yield (row[0], row[1])
+def read_gene_features(instream):
+    info = pandas.read_csv(
+        instream,
+        sep="\t",
+        usecols=[0, 1],
+        dtype=str,
+        header=None,
+        names=["gene_id", "gene_symbols"],
+    )
+
+    for i, row in info.iterrows():
+        if pandas.isnull(row["gene_symbols"]):
+            info["gene_symbols"].iloc[i] = row["gene_id"]
+    return info
+
+
+def read_sj_features(instream):
+    return pandas.read_csv(
+        instream,
+        sep="\t",
+        header=None,
+        names=[
+            "contig",
+            "start",
+            "end",
+            "strand",
+            "intron_motif",
+            "annotated",
+            "unique",
+            "multi",
+            "overhang",
+        ],
+    )
 
 
 def remove_manifest_md5s(manifest):
@@ -71,10 +99,10 @@ def read_mex_archive(filename=None, fileobj=None):
             elif member_path.name == "barcodes.tsv":
                 result["barcodes"] = pandas.Series(read_barcodes(text_stream))
             elif member_path.name == "features.tsv":
-                result["features"] = pandas.DataFrame(
-                    read_features(text_stream),
-                    columns=["gene_id", "gene_symbols"],
-                )
+                if member_path.parts[0] == "SJ":
+                    result["features"] = read_sj_features(text_stream)
+                else:
+                    result["features"] = read_gene_features(text_stream)
             elif member_path.suffix == ".mtx":
                 result["matrix"] = mmread(archive.extractfile(member))
             else:
@@ -103,8 +131,12 @@ def read_mex_archive_as_anndata(filename=None, fileobj=None):
     result["metadata"] = remove_manifest_md5s(result["metadata"])
     adata = AnnData(X=result["matrix"].T.tocsc(), uns=result["metadata"])
     adata.obs_names = result["barcodes"]
-    adata.var_names = result["features"]["gene_id"]
-    adata.var["gene_symbols"] = result["features"]["gene_symbols"].to_numpy()
+
+    for column in result["features"]:
+        if column == "gene_id":
+            adata.var_names = result["features"][column].to_numpy()
+        else:
+            adata.var[column] = result["features"][column].to_numpy()
     return adata
 
 

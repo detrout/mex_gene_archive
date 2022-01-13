@@ -15,7 +15,8 @@ from mex_gene_archive.manifest import (
 from mex_gene_archive.reader import (
     read_mex_archive,
     read_barcodes,
-    read_features,
+    read_gene_features,
+    read_sj_features,
     main as reader_main,
 )
 from mex_gene_archive.starsolo import (
@@ -63,6 +64,31 @@ class TestStarSolo(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.context.pop_all()
+
+    def test_read_gene_features_null(self):
+        instream = StringIO("100\tNULL\tGene Expression\n")
+        features = read_gene_features(instream)
+        self.assertEqual(features["gene_symbols"].iloc[0], "100")
+
+    def test_read_sj_features(self):
+        data = "chr1\t4878133\t4886743\t1\t1\t1\t0\t1\t30\n"
+        instream = StringIO(data)
+        expected = data.rstrip().split("\t")
+        features = read_sj_features(instream)
+
+        sj_columns = [
+            "contig",
+            "start",
+            "end",
+            "strand",
+            "intron_motif",
+            "annotated",
+            "unique",
+            "multi",
+            "overhang",
+        ]
+        for i, name in enumerate(sj_columns):
+            self.assertEqual(str(features[name].iloc[0]), expected[i])
 
     def test_make_list_of_archive_files_valid(self):
         root = Path("Solo.out")
@@ -187,12 +213,12 @@ outTmpDir                         _STARtmp
             self.assertEqual(barcodes, data["barcodes"].to_list())
 
         with open(filtered_dir / "features.tsv", "rt") as instream:
-            features = list(read_features(instream))
-            gene_id = [x[0] for x in features]
-            gene_symbols = [x[1] for x in features]
+            features = read_gene_features(instream)
+            gene_id = features["gene_id"]
+            gene_symbols = features["gene_symbols"]
             self.assertEqual((len(features), 2), data["features"].shape)
-            self.assertEqual(gene_id, data["features"]["gene_id"].to_list())
-            self.assertTrue(numpy.all(gene_symbols == data["features"]["gene_symbols"]))
+            self.assertEqual(gene_id.to_list(), data["features"]["gene_id"].to_list())
+            self.assertEqual(gene_symbols.to_list(), data["features"]["gene_symbols"].to_list())
 
     def test_archive_to_h5ad(self):
         anndata = importorskip("anndata")
@@ -220,11 +246,11 @@ outTmpDir                         _STARtmp
             self.assertEqual(barcodes, adata.obs_names.to_list())
 
         with open(filtered_dir / "features.tsv", "rt") as instream:
-            features = list(read_features(instream))
-            gene_id = [x[0] for x in features]
-            gene_symbols = [x[1] for x in features]
-            self.assertEqual(gene_id, adata.var_names.to_list())
-            self.assertTrue(numpy.all(gene_symbols == adata.var["gene_symbols"]))
+            features = read_gene_features(instream)
+            gene_id = features["gene_id"]
+            gene_symbols = features["gene_symbols"]
+            self.assertEqual(gene_id.to_list(), adata.var_names.to_list())
+            self.assertEqual(gene_symbols.to_list(), adata.var["gene_symbols"].to_list())
 
     def test_generate_count_matrix(self):
         # Do we get the same count matrix for the same barcodes?
