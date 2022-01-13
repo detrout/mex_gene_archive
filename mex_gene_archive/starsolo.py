@@ -54,6 +54,26 @@ def make_archive_root_name(solo_root, quantification, multiread, matrix):
     return solo_root / quantification / matrix
 
 
+def make_tar_archive_name(
+        solo_root, quantification, multiread, matrix, destination):
+    """Compute name of mex gene tar archives for different matrices
+    """
+    tar_name = "{}_{}_{}.tar.gz".format(quantification, multiread, matrix)
+    if destination is not None:
+        destination = Path(destination)
+        if destination.is_dir():
+            tar_name = destination / tar_name
+        else:
+            tar_name = destination
+    elif solo_root.is_dir():
+        tar_name = solo_root.parent / tar_name
+    else:
+        raise RuntimeError(
+            "Unable to determine destination. Check {}, {}".format(destination, solo_root))
+
+    return tar_name
+
+
 def make_list_of_archive_files(
     solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"
 ):
@@ -187,16 +207,15 @@ def archive_star_solo(
     manifest_buffer = BytesIO(
         write_manifest(StringIO(), manifest).getvalue().encode("utf-8")
     )
+    archive_root = make_archive_root_name(
+        solo_root, quantification, multiread, matrix)
+    manifest_filename = (archive_root / "manifest.tsv").relative_to(solo_root)
 
-    tar_name = "{}_{}_{}.tar.gz".format(quantification, multiread, matrix)
-    if destination is not None:
-        tar_name = Path(destination) / tar_name
-    elif solo_root.is_dir():
-        tar_name = solo_root.parent / tar_name
-
+    tar_name = make_tar_archive_name(
+        solo_root, quantification, multiread, matrix, destination)
     with gzip.GzipFile(tar_name, "wb", mtime=0) as gzipstream:
         with tarfile.open(mode="w", fileobj=gzipstream, format=tarfile.PAX_FORMAT) as archive:
-            info = tarfile.TarInfo("manifest.tsv")
+            info = tarfile.TarInfo(str(manifest_filename))
             update_tarinfo(info, fileobj=manifest_buffer)
             archive.addfile(info, manifest_buffer)
             for filename in archive_files:
