@@ -46,6 +46,14 @@ def validate_star_solo_out_arguments(
             raise ValueError("Splice junctions are only available as raw")
 
 
+def make_archive_root_name(solo_root, quantification, multiread, matrix):
+    """Generate list of files we expect to find in a STAR Solo.out directory tree
+    """
+    validate_star_solo_out_arguments(quantification, multiread, matrix)
+
+    return solo_root / quantification / matrix
+
+
 def make_list_of_archive_files(
     solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"
 ):
@@ -54,11 +62,14 @@ def make_list_of_archive_files(
     validate_star_solo_out_arguments(quantification, multiread, matrix)
     archive_files = []
 
-    archive_files.append(solo_root / quantification / matrix / "barcodes.tsv")
-    archive_files.append(solo_root / quantification / matrix / "features.tsv")
+    archive_root = make_archive_root_name(
+        solo_root, quantification, multiread, matrix)
+
+    archive_files.append(archive_root / "barcodes.tsv")
+    archive_files.append(archive_root / "features.tsv")
 
     archive_files.append(
-        solo_root / quantification / matrix / MULTIREAD_NAME[multiread]
+        archive_root / MULTIREAD_NAME[multiread]
     )
     return archive_files
 
