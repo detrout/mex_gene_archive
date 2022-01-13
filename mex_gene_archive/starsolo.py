@@ -63,12 +63,18 @@ def make_list_of_archive_files(
     return archive_files
 
 
-def update_tarinfo(info, filename):
+def update_tarinfo(info, filename=None, fileobj=None):
     """Fill in tarinfo fields for making tar archive
     """
-    stat_info = os.stat(filename)
-    info.size = stat_info[stat.ST_SIZE]
-    info.mode = stat_info[stat.ST_MODE]
+    if filename is not None:
+        stat_info = os.stat(filename)
+        info.size = stat_info[stat.ST_SIZE]
+    elif fileobj is not None:
+        curpos = fileobj.tell()
+        size = fileobj.seek(0, 2)
+        fileobj.seek(curpos, 0)
+        info.size = size
+
     info.mtime = 0
     info.mode = 0o644
     info.uid = 0
@@ -180,8 +186,7 @@ def archive_star_solo(
     with gzip.GzipFile(tar_name, "wb", mtime=0) as gzipstream:
         with tarfile.open(mode="w", fileobj=gzipstream, format=tarfile.PAX_FORMAT) as archive:
             info = tarfile.TarInfo("manifest.tsv")
-            update_tarinfo(info, archive_files[0])
-            info.size = len(manifest_buffer.getvalue())
+            update_tarinfo(info, fileobj=manifest_buffer)
             archive.addfile(info, manifest_buffer)
             for filename in archive_files:
                 info = tarfile.TarInfo(str(filename.relative_to(solo_root)))
