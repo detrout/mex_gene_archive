@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 import stat
 import tarfile
-import time
 
 from .manifest import (
     compute_md5sums,
