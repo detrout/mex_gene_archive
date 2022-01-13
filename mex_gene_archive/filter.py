@@ -122,3 +122,30 @@ def write_filtered_mtx(
             raw_barcode_filename, raw_matrix_filename, filtered_barcode_filename
         ):
             outstream.write(line)
+
+
+def main(cmdline=None):
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--raw-barcode", required=True, help="raw unfiltered barcode list"
+    )
+    parser.add_argument(
+        "--raw-matrix", required=True, help="raw unfiltered matrix market mtx file"
+    )
+    parser.add_argument(
+        "--filtered-barcode", required=True, help="filtered barcode list"
+    )
+    parser.add_argument(
+        "-o", "--output", required=True, help="filtered matrix market mtx file to write"
+    )
+    args = parser.parse_args(cmdline)
+
+    write_filtered_mtx(
+        args.raw_barcode, args.raw_matrix, args.filtered_barcode, args.output
+    )
+
+
+if __name__ == "__main__":
+    main()
