@@ -1,5 +1,6 @@
 import csv
 import logging
+from pathlib import Path
 import hashlib
 
 #######
@@ -14,7 +15,7 @@ class ConfigError(ValueError):
     pass
 
 
-def compute_md5sums(filenames):
+def compute_md5sums(files):
     """Compute md5sums of a list of files
 
     Parameters
@@ -27,9 +28,16 @@ def compute_md5sums(filenames):
     List of tuples containing the filename and md5 hex digest
     """
     results = []
-    for f in filenames:
-        with open(f, "rb") as instream:
+    for f in files:
+        if isinstance(f, str) or isinstance(f, Path):
+            with open(f, "rb") as instream:
+                md5 = compute_stream_md5sum(instream)
+        else:
+            instream = f
+            curpos = instream.tell()
+            instream.seek(0, 0)
             md5 = compute_stream_md5sum(instream)
+            instream.seek(curpos, 0)
         results.append((f, md5.hexdigest()))
     return results
 
