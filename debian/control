@@ -1,0 +1,32 @@
+Source: mex-gene-archive
+Maintainer: Diane Trout <diane@ghic.org>
+Section: python
+Priority: optional
+Build-Depends: debhelper-compat (=13),
+               dh-python,
+               git,
+               python3-all,
+               python3-anndata <!nocheck>,
+               python3-numpy <!nocheck>,
+               python3-pytest <!nocheck>,
+               python3-setuptools,
+               python3-setuptools-scm
+Standards-Version: 4.6.1
+Vcs-Browser: https://github.com/detrout/mex_gene_archive
+Vcs-Git: https://github.com/detrout/mex_gene_archive.git
+Homepage: https://github.com/detrout/mex_gene_archive
+Rules-Requires-Root: no
+
+Package: python3-mex-gene-archive
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: matrix market tar archive access utilities
+ mex_gene_archive is a minimal file format designed to meet the needs
+ of archiving sparse gene matrices in a format compatible with the
+ ENCODE 4 Data Coordination Center.
+ .
+ We had the requirement that a data type result needed to be a single
+ file and unfortunately the common output format for alignment programs
+ of the `matrix market exchange`_ use three files. One to store the
+ coordinates and values of the non-zero sparse matrix elements, one for
+ the row labels, and one for the column labels.

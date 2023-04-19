@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+for py in $(py3versions --supported 2>/dev/null)
+do cd "$AUTOPKGTEST_TMP"
+  echo "Testing with $py:"
+  http_proxy= $py -m pytest -v --pyargs mex_gene_archive
+done

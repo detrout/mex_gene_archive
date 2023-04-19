@@ -1,0 +1,7 @@
+Tests: run-tests
+Depends: git,
+         python3-all,
+         python3-anndata <!nocheck>,
+         python3-numpy <!nocheck>,
+         python3-pytest <!nocheck>,
+         @
