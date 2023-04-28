@@ -31,14 +31,14 @@ columns and the cell barcode observations going down across the rows.
 
 .. code-block:: python
 
-   from mex_gene_archive.reader import read_mex_as_anndata
+   from mex_gene_archive.reader import read_mex_archive_as_anndata
 
-   adata = read_mex_as_anndata("archive.tar.gz")
+   adata = read_mex_archive_as_anndata("archive.tar.gz")
 
    req = requests.get(
        "https://www.encodeproject.org/files/ENCFFexample/@@download/ENCFFexample.fastq.gz",
        stream=True)
-   adata = read_mex_as_anndata(fileobj=req.raw)
+   adata = read_mex_archive_as_anndata(fileobj=req.raw)
 
 
 The reader module can also convert archives to anndata directly from
