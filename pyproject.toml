@@ -16,9 +16,10 @@ envlist = py{37,38,39}
 skip_missing_interpreters = True
 
 [testenv]
-commands = pytest
+commands = pytest --cov=mex_gene_archive
 deps = 
-  pytest >= 4, <5
+  pytest
+  pytest-cov
 extras =
   test
 """
