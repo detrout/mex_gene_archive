@@ -1,6 +1,7 @@
 import argparse
 from io import TextIOWrapper
 import logging
+import numpy
 from pathlib import Path
 import pandas
 from scipy.io import mmread
@@ -129,7 +130,11 @@ def read_mex_archive_as_anndata(filename=None, fileobj=None):
 
     result = read_mex_archive(filename=filename, fileobj=fileobj)
     result["metadata"] = remove_manifest_md5s(result["metadata"])
-    adata = AnnData(X=result["matrix"].T.tocsc(), uns=result["metadata"])
+    if isinstance(result["matrix"], numpy.ndarray):
+        X = result["matrix"].T
+    else:
+        X = result["matrix"].T.tocsc()
+    adata = AnnData(X=X, uns=result["metadata"])
     adata.obs_names = result["barcodes"]
 
     for column in result["features"]:
