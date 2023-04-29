@@ -1,5 +1,4 @@
 import argparse
-import csv
 from io import TextIOWrapper
 import logging
 from pathlib import Path
