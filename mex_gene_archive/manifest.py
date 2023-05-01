@@ -87,6 +87,10 @@ def create_metadata(config, md5s):
     for key in ["experiment_accession", "description", "library_accession"]:
         if key in config:
             metadata[key] = config[key]
+        else:
+            raise ConfigError(
+                "Expected attribute {} is missing from configuration".format(key)
+            )
 
     for filename, md5 in md5s:
         metadata[filename] = "md5sum:{}".format(md5)

@@ -83,3 +83,21 @@ class TestManifest(TestCase):
         }
         with self.assertLogs(manifest_logger) as log:
             self.assertRaises(ConfigError, validate_config_metadata, config)
+
+    def test_validate_config_metadata_missing_library_accession(self):
+        config = {
+            "read1": ["ENCFF150FBF", "ENCFF385IAW"],
+            "read2": ["ENCFF351VBS", "ENCFF503CCI"],
+            "include_introns": True,
+            "stranded": "Forward",
+            "experiment_accession": "ENCSR724KET",
+            "library_accession": "ENCLB002DZK",
+            "umi_version": 12,
+            "genome_dir": "genome_dir",
+            "allow_list": "allow_list",
+            "mem_mb": 65535,
+            "disk_mb": 51200,
+        }
+        with self.assertLogs(manifest_logger) as log:
+            self.assertRaises(ConfigError, validate_config_metadata, config)
+
