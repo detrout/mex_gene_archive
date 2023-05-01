@@ -92,9 +92,11 @@ class TestMexAnndata(TestCase):
             adata.uns["description"] = "sample data generated for testing"
             adata.uns["library_accession"] = "test_library"
 
-            filename = Path("{}_{}_{}.tar.gz".format(quantification, multiread, matrix))
             write_anndata_as_mex_archive(
                 adata, quantification, multiread, matrix, destination=tmp_dir
+            )
+            filename = tmp_dir / "{}_{}_{}.tar.gz".format(
+                quantification, multiread, matrix
             )
             self.assertTrue(filename.exists())
 
