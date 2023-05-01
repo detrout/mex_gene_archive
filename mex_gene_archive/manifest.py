@@ -7,11 +7,12 @@ import hashlib
 # Functions for making manifest
 #
 logger = logging.getLogger(__name__)
-IO_BUFFER = 2 ** 10
+IO_BUFFER = 2**10
 
 
 class ConfigError(ValueError):
     """Indicate the config dictionary isn't correct"""
+
     pass
 
 
@@ -79,7 +80,7 @@ def create_metadata(config, md5s):
     """
     metadata = {
         "type": "MexGeneArchive_v1",
-        "output_type": config['output_type'],
+        "output_type": config["output_type"],
         "software_version": config["software_version"],
         "arguments": config["arguments"],
     }
