@@ -57,6 +57,7 @@ def make_tar_archive_name(
         solo_root, quantification, multiread, matrix, destination):
     """Compute name of mex gene tar archives for different matrices
     """
+    solo_root = Path(solo_root)
     tar_name = "{}_{}_{}.tar.gz".format(quantification, multiread, matrix)
     if destination is not None:
         destination = Path(destination)

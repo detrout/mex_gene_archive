@@ -23,6 +23,7 @@ from mex_gene_archive.starsolo import (
     MULTIREAD_NAME,
     make_list_of_archive_files,
     make_output_type_term,
+    make_tar_archive_name,
     validate_star_solo_out_arguments,
     parse_star_log_out_stream,
     archive_star_solo,
@@ -283,3 +284,25 @@ outTmpDir                         _STARtmp
             md5.update(line.encode("utf-8"))
 
         self.assertEqual(files_md5[0][1], md5.hexdigest())
+
+    def test_make_tar_archive_name(self):
+        dest = "/tmp"
+        tar_name = make_tar_archive_name(self.solo_dir, "Gene", "Unique", "raw", dest)
+        self.assertEqual(tar_name,  Path("/tmp/Gene_Unique_raw.tar.gz"))
+
+        filename = "/tmp/archive.tar.gz"
+        tar_name = make_tar_archive_name(
+            self.solo_dir, "Gene", "Unique", "raw", filename)
+        self.assertEqual(tar_name, Path(filename))
+
+        filename = Path("/tmp/archive.tar.gz")
+        tar_name = make_tar_archive_name(
+            self.solo_dir, "Gene", "Unique", "raw", filename)
+        self.assertEqual(tar_name, filename)
+
+        tar_name = make_tar_archive_name(self.solo_dir, "Gene", "Unique", "raw", None)
+        filename = self.solo_dir.parent / "Gene_Unique_raw.tar.gz"
+        self.assertEqual(tar_name,  filename)
+
+        self.assertRaises(
+            RuntimeError, make_tar_archive_name, __file__, "Gene", "Unique", "raw", None)
