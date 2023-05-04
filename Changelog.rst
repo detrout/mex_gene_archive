@@ -1,5 +1,19 @@
+
 Changelog
 =========
+
+Release 0.2.2
+-------------
+
+Add function to write an AnnData archive to a mex_gene_archive file.
+
+def write_anndata_as_mex_archive(
+    adata,
+    quantification="GeneFull",
+    multiread="Unique",
+    matrix="raw",
+    *,
+    destination=None)
 
 Release 0.2.1
 -------------
