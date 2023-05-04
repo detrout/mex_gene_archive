@@ -695,11 +695,10 @@ def write_barcodes(filename, barcodes):
             outstream.write("{}\n".format(barcode))
 
 
-def generate_features(feature_length, library_id=None):
-    prefix = "" if library_id is None else "{}-".format(library_id)
+def generate_features(feature_length):
     for feature_id in range(feature_length):
         yield (
-            "{}GENE{:0>5}".format(prefix, feature_id),
+            "GENE{:0>5}".format(feature_id),
             "symbol{:0>5}".format(feature_id),
             "Gene Expression",
         )

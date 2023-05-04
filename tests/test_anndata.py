@@ -23,10 +23,10 @@ from .stage_data import (
 )
 
 
-def make_adata(feature_length=20, library_id=None):
+def make_adata(feature_length=20):
     barcodes = list(generate_barcodes())
     features = pandas.DataFrame(
-        generate_features(20, library_id=library_id), columns=["id", "name", "type"]
+        generate_features(20), columns=["id", "name", "type"]
     )
     count_matrix = generate_count_matrix(barcodes, feature_length).T
     adata = AnnData(X=count_matrix)
