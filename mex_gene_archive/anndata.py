@@ -117,7 +117,7 @@ def write_anndata_as_mex_archive(
     md5s = [
         (barcode_filename, compute_byte_md5sum(generate_barcode_bytes(adata))),
         (features_filename, compute_byte_md5sum(generate_features_bytes(adata))),
-        (matrix_filename, hashlib.md5(get_matrix_buffer(adata))),
+        (matrix_filename, hashlib.md5(get_matrix_buffer(adata)).hexdigest()),
     ]
     manifest = create_metadata(adata.uns, md5s)
 

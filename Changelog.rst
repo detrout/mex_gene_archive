@@ -2,6 +2,14 @@
 Changelog
 =========
 
+Release 0.2.3
+-------------
+
+The code to generate the md5sums for the merged matrix file didn't
+call .hexdigest() so the md5sum for the merged sparse matrix file was
+the string rerepresentation of the python md5 object.
+
+
 Release 0.2.2
 -------------
 
