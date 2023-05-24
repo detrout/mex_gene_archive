@@ -27,6 +27,29 @@ AnnData structure.
 Both functions can be used with either local filenames or objects
 providing a file object like interface for reading remote objects.
 
+A warning about cell barcodes
+-----------------------------
+
+For 10x protocols cell barcodes between runs may look like they're
+unique among different libraries, but they are not.
+
+Each run pulls from the same pool of possible barcodes, and although
+the odds of a collision for 10x are relatively low for combining a few
+filtered matrices, it is possible, and the odds of seeing two
+different cells from different libraries have the same cell barcode
+increases with the density of the matrix and the number of matrices merged.
+
+The problem is even worse for Parse Biosystems libraries, as the barcodes
+are virtually guaranteed to colide.
+
+One should be prepared to add an additional unique identifier to the cell
+barcodes when combining matrices from different libraries.
+
+The later Parse Biosystems processing pipeline that produces a merged matrix
+built from all of the subpools derived from the same biosample automatically
+adds the library id as the unique identifier.
+
+
 Specification for a mex_gene_archive generated with STARsolo
 ------------------------------------------------------------
   
