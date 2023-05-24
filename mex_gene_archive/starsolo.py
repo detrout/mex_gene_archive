@@ -25,6 +25,25 @@ def validate_star_solo_out_arguments(
     quantification="GeneFull", multiread="Unique", matrix="raw"
 ):
     """Make sure the arguments match the STAR Solo command line arguments
+
+    Only certain combinations of arguments are possible.
+
+    Parameters
+    ----------
+
+    quantification
+        One of Gene, GeneFull (default), GeneFull_Ex50pAS, SJ
+
+    multiread
+        One of Unique (default), EM
+
+    matrix
+        One of raw, filtered
+
+    Raises
+    ------
+
+    ValueError if an invalid argument is provided
     """
     quantification_terms = ["Gene", "GeneFull", "GeneFull_Ex50pAS", "SJ"]
     if quantification not in quantification_terms:
@@ -120,6 +139,27 @@ def make_output_type_term(quantification="GeneFull", multiread="Unique", matrix=
 
     The different combinations of quantification, multiread, and matrix are represented
     as different object types and the ENCODE portal.
+
+
+    Parameters
+    ----------
+    quantification
+        One of Gene, GeneFull (default), GeneFull_Ex50pAS, SJ
+
+    multiread
+        One of Unique (default), EM
+
+    matrix
+        One of raw, filtered
+
+    Returns
+    -------
+    The string describing one of the ENCODE output_type controlled vocabulary
+    terms.
+
+    Raises
+    ------
+    ValueError if provided an incorrect parameter.
     """
     validate_star_solo_out_arguments(quantification, multiread, matrix)
 
@@ -180,19 +220,30 @@ def archive_star_solo(
 ):
     """Archive a specific STAR solo result directory
 
-
     Parameters
     ----------
-    solo_root : path to STAR's Solo.out directory where
-        a file named {quantification}_{multiread}_{matrix}.tar.gz will be
-        written.
-    config : dictionary of configuration options
-    quantification : Which counting method to use "Gene", "GeneFull",
+    solo_root
+        path to STAR's Solo.out directory where a file named
+        {quantification}_{multiread}_{matrix}.tar.gz will be written.
+
+    config
+        dictionary of configuration options
+
+    quantification
+        Which counting method to use "Gene", "GeneFull",
         "GeneFull_Ex50pAS"
-    multiread : which STAR EM processing level to use "Unique", "EM"
-    matrix : which matrix to read either "raw" or "filtered"
-    destination : what directory to write the archive to, defaults to
+
+    multiread
+
+        which STAR EM processing level to use "Unique", "EM"
+
+    matrix
+        which matrix to read either "raw" or "filtered"
+
+    destination
+        what directory to write the archive to, defaults to
         solo_root/..
+
     """
     validate_star_solo_out_arguments(quantification, multiread, matrix)
 

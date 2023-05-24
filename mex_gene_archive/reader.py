@@ -74,8 +74,11 @@ def read_mex_archive(filename=None, fileobj=None):
 
     Parameters
     ----------
-    filename : Name of file to read
-    fileobj : file-like object to read
+    filename
+        Name of file to read
+
+    fileobj
+        file-like object to read
 
     one and only one of filename or fileobj needs to be provided.
 
