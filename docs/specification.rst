@@ -11,18 +11,23 @@ A mex_gene_archive tar file contains 4 files:
 To improve reproducibility the file time stamps for all of the files included in the
 archive are set to the UNIX time stamp 0, which is 1970-01-01 at 00:00 UTC.
 
+All the sc/snRNA-seq quantifiers that I investigated, STARsolo, Kallisto, and Alevin
+were able to generate matrix market files, for the ENCODE project we used STARsolo,
+so the existing archive files are using STARsolo's file names, however it should
+be straight-forward to archive the output of other programs.
+
 
 Specification for a mex_gene_archive generated with STARsolo
 ------------------------------------------------------------
   
-The ${path} varies as it is the path the aligner used when writing out
+The ${path} varies as it is the path the quantifier used when writing out
 the matrix market exchange file. Since the are frequently multiple versions
 of the matrix files they are usually written to separate directories.
 
 One design goal was to avoid making any uncessary changes to the
-aligner output.
+quantifier output.
 
-The STAR aligner supports several different gene counting strategies and provides
+The STAR quantifier supports several different gene counting strategies and provides
 optional EM assignment of multi reads, and lastly there is a choice between
 raw unfiltered matrices and count matrices filtered by various various methods.
 
@@ -107,11 +112,11 @@ output_type
    - unfiltered sparse splice junction count matrix of unique reads
 
 software_version
-   Either the version of the aligner used for the raw matrices, or the
+   Either the version of the quantifier used for the raw matrices, or the
    version of mex_gene_archive used for merged matrices.
 
 arguments
-   Command line arguments used for the aligner.
+   Command line arguments used for the quantifier.
 
 experiment_accession
    An accession ID for the experiment this file was derived from
