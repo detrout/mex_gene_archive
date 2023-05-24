@@ -16,6 +16,16 @@ were able to generate matrix market files, for the ENCODE project we used STARso
 so the existing archive files are using STARsolo's file names, however it should
 be straight-forward to archive the output of other programs.
 
+The matrix market file format is defined at `Matrix Market format`_ though
+functions are available in many libraries to read the files.
+
+mex_gene_archive also provides :ref:`mex_gene_archive.reader.read_mex_archive` to read an
+archive file into 4 dictionaries and
+:ref:`mex_gene_archive.reader.read_mex_archive_as_anndata` to load the matrix into an
+AnnData structure.
+
+Both functions can be used with either local filenames or objects
+providing a file object like interface for reading remote objects.
 
 Specification for a mex_gene_archive generated with STARsolo
 ------------------------------------------------------------
@@ -80,17 +90,6 @@ UniqueAndMult-Rescue.mtx
   This is unused in ENCODE but assigns multi-gene UMIs to their gene
   proportionally to the sum of the number of unique gene UMIs.
 
-
-The matrix market file format is defined at `Matrix Market format`_ though
-functions are available in many libraries to read the files.
-
-mex_gene_archive also provides :ref:`mex_gene_archive.reader.read_mex_archive` to read an
-archive file into 4 dictionaries and
-:ref:`mex_gene_archive.reader.read_mex_archive_as_anndata` to load the matrix into an
-AnnData structure.
-
-Both functions can be used with either local filenames or objects
-providing a file object like interface for reading remote objects.
 
 metadata.tsv
 ------------
