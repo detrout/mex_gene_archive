@@ -89,6 +89,8 @@ def write_anndata_as_mex_archive(
         adata.uns["output_type"] = make_output_type_term(
             quantification, multiread, matrix
         )
+    if "software" not in adata.uns:
+        adata.uns["software"] = "unknown"
     if "software_version" not in adata.uns:
         adata.uns["software_version"] = __version__
     if "arguments" not in adata.uns:
