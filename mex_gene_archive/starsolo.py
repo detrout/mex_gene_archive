@@ -251,6 +251,7 @@ def archive_star_solo(
         root, quantification, multiread, matrix
     )
 
+    config["software"] = "STAR"
     config['output_type'] = make_output_type_term(quantification, multiread, matrix)
     config.update(parse_star_log_out(root / ".." / "Log.out"))
     md5s = compute_md5sums(archive_files)

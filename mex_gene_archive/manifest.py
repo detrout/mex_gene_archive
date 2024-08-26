@@ -81,6 +81,7 @@ def create_metadata(config, md5s):
     metadata = {
         "type": "MexGeneArchive_v1",
         "output_type": config["output_type"],
+        "software": config["software"],
         "software_version": config["software_version"],
         "arguments": config["arguments"],
     }
@@ -112,7 +113,7 @@ def validate_config_metadata(config):
     ------
     ConfigError if something is wrong
     """
-    not_user = ["type", "output_type", "software_version", "arguments"]
+    not_user = ["type", "output_type", "software", "software_version", "arguments"]
     user = ["experiment_accession", "description", "library_accession"]
     has_errors = False
 
