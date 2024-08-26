@@ -64,19 +64,19 @@ def validate_star_solo_out_arguments(
             raise ValueError("Splice junctions are only available as raw")
 
 
-def make_archive_root_name(solo_root, quantification, multiread, matrix):
+def make_archive_root_name(root, quantification, multiread, matrix):
     """Generate list of files we expect to find in a STAR Solo.out directory tree
     """
     validate_star_solo_out_arguments(quantification, multiread, matrix)
 
-    return solo_root / quantification / matrix
+    return root / quantification / matrix
 
 
 def make_tar_archive_name(
-        solo_root, quantification, multiread, matrix, destination):
+        root, quantification, multiread, matrix, destination):
     """Compute name of mex gene tar archives for different matrices
     """
-    solo_root = Path(solo_root)
+    root = Path(root)
     tar_name = "{}_{}_{}.tar.gz".format(quantification, multiread, matrix)
     if destination is not None:
         destination = Path(destination)
@@ -84,17 +84,17 @@ def make_tar_archive_name(
             tar_name = destination / tar_name
         else:
             tar_name = destination
-    elif solo_root.is_dir():
-        tar_name = solo_root.parent / tar_name
+    elif root.is_dir():
+        tar_name = root.parent / tar_name
     else:
         raise RuntimeError(
-            "Unable to determine destination. Check {}, {}".format(destination, solo_root))
+            "Unable to determine destination. Check {}, {}".format(destination, root))
 
     return tar_name
 
 
 def make_list_of_archive_files(
-    solo_root, quantification="GeneFull", multiread="Unique", matrix="raw"
+    root, quantification="GeneFull", multiread="Unique", matrix="raw"
 ):
     """Generate list of files we expect to find in a STAR Solo.out directory tree
     """
@@ -102,7 +102,7 @@ def make_list_of_archive_files(
     archive_files = []
 
     archive_root = make_archive_root_name(
-        solo_root, quantification, multiread, matrix)
+        root, quantification, multiread, matrix)
 
     archive_files.append(archive_root / "barcodes.tsv")
     archive_files.append(archive_root / "features.tsv")
@@ -210,7 +210,7 @@ def parse_star_log_out_stream(fileobj):
 
 
 def archive_star_solo(
-    solo_root,
+    root,
     config,
     quantification="GeneFull",
     multiread="Unique",
@@ -222,7 +222,7 @@ def archive_star_solo(
 
     Parameters
     ----------
-    solo_root
+    root
         path to STAR's Solo.out directory where a file named
         {quantification}_{multiread}_{matrix}.tar.gz will be written.
 
@@ -242,35 +242,35 @@ def archive_star_solo(
 
     destination
         what directory to write the archive to, defaults to
-        solo_root/..
+        root/..
 
     """
     validate_star_solo_out_arguments(quantification, multiread, matrix)
 
     archive_files = make_list_of_archive_files(
-        solo_root, quantification, multiread, matrix
+        root, quantification, multiread, matrix
     )
 
     config['output_type'] = make_output_type_term(quantification, multiread, matrix)
-    config.update(parse_star_log_out(solo_root / ".." / "Log.out"))
+    config.update(parse_star_log_out(root / ".." / "Log.out"))
     md5s = compute_md5sums(archive_files)
     manifest = create_metadata(config, md5s)
     manifest_buffer = BytesIO(
         write_manifest(StringIO(), manifest).getvalue().encode("utf-8")
     )
     archive_root = make_archive_root_name(
-        solo_root, quantification, multiread, matrix)
-    manifest_filename = (archive_root / "manifest.tsv").relative_to(solo_root)
+        root, quantification, multiread, matrix)
+    manifest_filename = (archive_root / "manifest.tsv").relative_to(root)
 
     tar_name = make_tar_archive_name(
-        solo_root, quantification, multiread, matrix, destination)
+        root, quantification, multiread, matrix, destination)
     with gzip.GzipFile(tar_name, "wb", mtime=0) as gzipstream:
         with tarfile.open(mode="w", fileobj=gzipstream, format=tarfile.PAX_FORMAT) as archive:
             info = tarfile.TarInfo(str(manifest_filename))
             update_tarinfo(info, fileobj=manifest_buffer)
             archive.addfile(info, manifest_buffer)
             for filename in archive_files:
-                info = tarfile.TarInfo(str(filename.relative_to(solo_root)))
+                info = tarfile.TarInfo(str(filename.relative_to(root)))
                 update_tarinfo(info, filename)
                 with open(filename, "rb") as instream:
                     archive.addfile(info, instream)
