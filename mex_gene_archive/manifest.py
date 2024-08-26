@@ -66,7 +66,7 @@ def compute_stream_md5sum(instream):
     return md5
 
 
-def create_metadata(config, md5s):
+def create_metadata(config, md5s, root=None):
     """Compute metadata for a manifest file
 
     Parameters
@@ -94,7 +94,11 @@ def create_metadata(config, md5s):
             )
 
     for filename, md5 in md5s:
-        metadata[filename] = "md5sum:{}".format(md5)
+        if root is not None:
+            relative = filename.relative_to(root)
+        else:
+            relative = filename
+        metadata[str(relative)] = "md5sum:{}".format(md5)
 
     return metadata
 

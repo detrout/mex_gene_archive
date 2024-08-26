@@ -255,7 +255,7 @@ def archive_star_solo(
     config['output_type'] = make_output_type_term(quantification, multiread, matrix)
     config.update(parse_star_log_out(root / ".." / "Log.out"))
     md5s = compute_md5sums(archive_files)
-    manifest = create_metadata(config, md5s)
+    manifest = create_metadata(config, md5s, root)
     manifest_buffer = BytesIO(
         write_manifest(StringIO(), manifest).getvalue().encode("utf-8")
     )
