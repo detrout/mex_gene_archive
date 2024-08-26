@@ -12,7 +12,7 @@ write_to = "mex_gene_archive/_version.py"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{39,310,311}
+envlist = py{310,311,312,313}
 skip_missing_interpreters = True
 
 [testenv]
