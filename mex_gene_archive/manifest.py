@@ -110,7 +110,7 @@ def is_encode_user_invalid(config):
 
 
 def is_igvf_user_invalid(config):
-    for key in ["measurement_set", "description"]:
+    for key in ["input_file_sets", "description"]:
         if key not in config:
             logger.error(
                 "Expected IGVF attribute {} is missing from configuration".format(key)
@@ -143,13 +143,13 @@ def validate_config_metadata(config):
             has_errors = True
 
 
-    if "measurement_set" in config:
+    if "input_file_sets" in config:
         has_errors |= is_igvf_user_invalid(config)
     elif "experiment_accession" in config:
         has_errors |= is_encode_user_invalid(config)
     else:
         has_errors = True
-        logger.error("Missing measurement_set or experiment_accession")
+        logger.error("Missing input_file_sets or experiment_accession")
 
     if has_errors:
         raise ConfigError("Invalid attributes in config file")
