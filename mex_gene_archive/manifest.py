@@ -85,13 +85,9 @@ def create_metadata(config, md5s, root=None):
         "software_version": config["software_version"],
         "arguments": config["arguments"],
     }
-    for key in ["experiment_accession", "description", "library_accession"]:
-        if key in config:
+    for key in config:
+        if key not in metadata:
             metadata[key] = config[key]
-        else:
-            raise ConfigError(
-                "Expected attribute {} is missing from configuration".format(key)
-            )
 
     for filename, md5 in md5s:
         if root is not None:
