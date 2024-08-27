@@ -1,13 +1,16 @@
-from io import BytesIO
+from io import BytesIO, StringIO
+import os
 from pathlib import Path
 from unittest import TestCase
 
 from mex_gene_archive.manifest import (
     compute_md5sums,
     compute_stream_md5sum,
-    validate_config_metadata,
     ConfigError,
-    logger as manifest_logger
+    logger as manifest_logger,
+    read_manifest,
+    validate_config_metadata,
+    write_manifest,
 )
 
 
@@ -102,3 +105,28 @@ class TestManifest(TestCase):
         with self.assertLogs(manifest_logger) as log:
             self.assertRaises(ConfigError, validate_config_metadata, config)
 
+    def test_create_igvf_metadata(self):
+        config = {
+            "input_file_sets": ["TSTDS34582101", "TSTDS07432728"],
+            "description": ["RNA-seq of fresh tomato with basil"],
+        }
+
+        validate_config_metadata(config)
+
+        with StringIO(newline="") as buf:
+            write_manifest(buf, config)
+            manifest = buf.getvalue()
+
+        expected = {
+            0: "name\tvalue\r\n",
+            1: "input_file_sets\tTSTDS34582101\r\n",
+            2: "\tTSTDS07432728\r\n",
+            3: "description\tRNA-seq of fresh tomato with basil\r\n",
+        }
+        for i, line in enumerate(StringIO(manifest, newline="")):
+            self.assertEqual(line, expected[i])
+
+        with StringIO(manifest, newline="") as buf:
+            round_trip = read_manifest(buf)
+
+            self.assertEqual(round_trip["input_file_sets"], config["input_file_sets"])

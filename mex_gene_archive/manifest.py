@@ -171,7 +171,13 @@ def write_manifest(outstream, config):
     writer = csv.writer(outstream, delimiter="\t")
     writer.writerow(["name", "value"])
     for key in config:
-        writer.writerow([key, config[key]])
+        value = config[key]
+        if isinstance(value, list):
+            writer.writerow([key, value[0]])
+            for element in value[1:]:
+                writer.writerow(["", element])
+        else:
+            writer.writerow([key, value])
     return outstream
 
 
@@ -185,9 +191,21 @@ def read_manifest(instream):
     reader = csv.reader(instream, delimiter="\t")
     header = None
     metadata = {}
+    previous_name = None
     for row in reader:
         if header is None:
             header = row
         else:
-            metadata[row[0]] = row[1]
+            name = row[0]
+            value = row[1]
+            if len(name) > 0:
+                metadata[name] = value
+                previous_name = name
+            else:
+                # continuation of previous value
+                if isinstance(metadata[previous_name], list):
+                    metadata[previous_name].append(value)
+                else:
+                    metadata[previous_name] = [metadata[previous_name], value]
+
     return metadata
