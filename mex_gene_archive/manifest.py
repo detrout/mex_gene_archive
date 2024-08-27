@@ -158,6 +158,10 @@ def validate_config_metadata(config):
 def write_manifest(outstream, config):
     """Write manifest information to file-like object
 
+    This internally uses the python standard library function
+    csv.writer. For file objects, the library documentation recommends
+    opening them with newline=""
+
     Parameters
     ----------
     outstream : writable file like object
