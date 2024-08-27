@@ -51,6 +51,7 @@ class TestManifest(TestCase):
         config = {
             "read1": ["ENCFF150FBF", "ENCFF385IAW"],
             "read2": ["ENCFF351VBS", "ENCFF503CCI"],
+            "software": "STAR",
             "software_version": "dev_EoI_2.7.9a_2021-09-30",
             "arguments": "--help",
             "include_introns": True,
