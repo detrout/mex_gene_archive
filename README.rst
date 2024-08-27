@@ -13,6 +13,30 @@ of the `matrix market exchange`_ use three files. One to store the
 coordinates and values of the non-zero sparse matrix elements, one for
 the row labels, and one for the column labels.
 
+For IGVF the contents were extended to support any number of matrixes
+in one tar file.
+
+The archives include a manifest.tsv file that provides some information
+about what is in the archive.
+
+Here is an example subset of a recent manifest file. It contains a list of name value pairs.
+In the case of a list metadata value, the additional list items are written as new entries
+with a blank value name.
+
+The end of the file will contain a list of the other included files and their md5sum.
+
+One of the weaknesses of tar.gz is the lack of a file content index.
+
++-----------------------------------------------------+---------------------------------------+
+|name                                                 |value                                  |
++-----------------------------------------------------+---------------------------------------+
+|type                                                 |MexGeneArchive                         |
+|software                                             |kallisto                               |
+|software_version                                     |0.50.1                                 |
+|input_file_set                                       |TSTDS34582101                          |
+|                                                     |TSTDS07432728                          |
+|counts_unfiltered_modified/cells_x_genes.barcodes.txt|md5sum:af2e5a8e0f6d2da661e99c64a9656224|
++-----------------------------------------------------+---------------------------------------+
 
 Usage
 =====
