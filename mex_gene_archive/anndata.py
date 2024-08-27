@@ -11,8 +11,9 @@ import hashlib
 from io import BytesIO, StringIO
 import os
 from pathlib import Path
-from scipy.io.mmio import MMFile
 import tarfile
+
+from .mmio import MMFile
 
 from mex_gene_archive.manifest import (
     ConfigError,
