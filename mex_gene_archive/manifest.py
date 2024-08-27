@@ -80,7 +80,6 @@ def create_metadata(config, md5s, root=None):
     """
     metadata = {
         "type": "MexGeneArchive_v1",
-        "output_type": config["output_type"],
         "software": config["software"],
         "software_version": config["software_version"],
         "arguments": config["arguments"],
