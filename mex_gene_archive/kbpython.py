@@ -32,7 +32,7 @@ def archive_kbpython(root, config, quantifications, matrix, *, destination=None)
     :param destination: a filename or directory to write the output to. None will be treated
                         as the current directory. If destination is a directory, a filename
                         for the tar file will be computed based on the quantifications and
-                        matrix parameters. If destination is a path to a file it wil be 
+                        matrix parameters. If destination is a path to a file it wil be
                         used directly.
     :type destination: str | Path
 
@@ -40,10 +40,10 @@ def archive_kbpython(root, config, quantifications, matrix, *, destination=None)
     :rtype: Path
     """
     quantifications = cast_to_list(quantifications)
-        
+
     validate_kbpython_arguments(quantifications, matrix)
 
-    archive_root = make_kbpython_root_name(root, quantifications, matrix)    
+    archive_root = make_kbpython_root_name(root, quantifications, matrix)
     archive_files = make_list_of_archive_files(archive_root, quantifications, matrix)
 
     config["software"] = "kallisto"
@@ -97,7 +97,7 @@ def parse_kallisto_run_info_stream(fileobj):
     attributes["software_version"] = data["kallisto_version"]
     attributes["arguments"] = data["call"]
     return attributes
-    
+
 def validate_kbpython_arguments(quantifications, matrix):
     """Make sure the arguments match the STAR Solo command line arguments
 
@@ -147,7 +147,7 @@ def make_kbpython_root_name(root, quantifications, matrix):
     :param root: root directory for a kb_python run
     :param quantifications: list of quantification matrix types
     :param matrix: name of the type of count matrices.
-    
+
     :returns: path to analysis directory for a specific matrix type
     """
     root = Path(root)
@@ -160,7 +160,7 @@ def make_tar_archive_name(root, quantifications, matrix, destination):
     """
     root = Path(root)
     quantifications = cast_to_list(quantifications)
-    
+
     quantification_name = make_quantification_name(quantifications)
     tar_name = "{}_{}.tar.gz".format(matrix, quantification_name)
     if destination is not None:
@@ -214,5 +214,3 @@ def update_tarinfo(info, filename=None, fileobj=None):
     info.uname = "root"
     info.gname = "root"
     info.type = tarfile.REGTYPE
-
-    
